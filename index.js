@@ -1,4 +1,5 @@
 const express = require("express");
+const port = process.env.PORT || 8080;
 const mongoose = require("mongoose");
 const cors = require("cors");
 const movieRoute = require("./route/movie");
@@ -28,6 +29,6 @@ mongoose
 app.use("/movie", movieRoute);
 app.use("/user", userRoute);
 
-app.listen(8080, () => {
-  console.log("server running at port 8080 .....");
+app.listen(port, () => {
+  console.log("server running at port " + port + " .....");
 });
