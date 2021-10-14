@@ -1,26 +1,23 @@
 // MOVIE ROUTES HANDLER
+//=================================================
 
 const express = require("express");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const MovieInfo = require("../models/movie");
+const checkAuth = require("../middleware/check-auth");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "dmurbyjhs",
+  api_key: "673265135469578",
+  api_secret: "t8WmrcEvi52A_E3m4miPqnDFUWI",
+});
 
 const router = express.Router();
 
-router.post("/add-movie", (req, res) => {
-  const Movie = new MovieInfo({
-    name: req.body.name,
-    img: req.body.img,
-    summary: req.body.summary,
-  });
-
-  Movie.save()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => console.log(err));
-});
-
+//to get the list of all movies present in the database
+// checkauth middleware is not added here to allow everyone to view the list
 router.get("/all-movies", (req, res) => {
   MovieInfo.find()
     .then((result) => {
@@ -34,7 +31,30 @@ router.get("/all-movies", (req, res) => {
     .catch((err) => console.log(err));
 });
 
-router.put("/:name", (req, res) => {
+// to add a new movie to the database
+router.post("/add-movie", checkAuth, (req, res) => {
+  // photo is name of property whose value will be img
+  const file = req.files.photo;
+
+  cloudinary.uploader.upload(file.tempFilePath, (err, result) => {
+    // console.log(result);
+    const Movie = new MovieInfo({
+      name: req.body.name,
+      // request.url is url of img uploaded on cloudinary
+      // this url will now be uploaded to mongoDB database
+      img: result.url,
+      summary: req.body.summary,
+    });
+    Movie.save()
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => console.log(err));
+  });
+});
+
+// to update a movie from the database
+router.put("/:name", checkAuth, (req, res) => {
   MovieInfo.findOneAndUpdate(
     { name: req.params.name },
     {
@@ -58,7 +78,8 @@ router.put("/:name", (req, res) => {
     });
 });
 
-router.delete("/:name", (req, res) => {
+// to delete a movie from the database
+router.delete("/:name", checkAuth, (req, res) => {
   MovieInfo.deleteOne({ name: req.params.name })
     .then((result) => {
       res.status(200).json({

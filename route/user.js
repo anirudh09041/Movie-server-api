@@ -7,6 +7,13 @@ const brcypt = require("bcrypt");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 
+// for sign up / register a new user
+// username
+// password
+// phone
+// email
+// usertype  are required
+
 router.post("/signup", (req, res) => {
   brcypt.hash(req.body.password, 10, (err, hash) => {
     if (err) {
@@ -34,6 +41,8 @@ router.post("/signup", (req, res) => {
   });
 });
 
+// to get the list of all users
+
 router.get("/all-users", (req, res) => {
   UserInfo.find()
     .then((result) => {
@@ -41,6 +50,8 @@ router.get("/all-users", (req, res) => {
     })
     .catch((err) => console.log(err));
 });
+
+// to login only email and password are required in the body
 
 router.post("/login", async (req, res) => {
   // finding the user by his email ID
@@ -67,51 +78,6 @@ router.post("/login", async (req, res) => {
   //sending token to the user
   res.header("auth-token", token).send(token);
 });
-
-// router.post("/login", async (req, res) => {
-//   await UserInfo.find({ username: req.body.username })
-//     .exec()
-//     .then((user) => {
-//       if (user.length < 1) {
-//         // if user array is empty
-//         return res.send("user not found!");
-//       }
-//       bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-//         if (!result) {
-//           // if no result
-//           return res.send("wrong password");
-//         }
-//         if (result) {
-//           // if result found we will send token to the user
-//           const token = jwt.sign(
-//             {
-//               username: user[0].username,
-//               usertype: user[0].usertype,
-//               email: user[0].email,
-//               phone: user[0].phone,
-//             },
-//             "mynameisanirudhkaushalandthisismysecretkey",
-//             {
-//               expiresIn: "24h",
-//             }
-//           );
-//           res.status(200).json({
-//             username: user[0].username,
-//             usertype: user[0].usertype,
-//             email: user[0].email,
-//             phone: user[0].phone,
-//             // token: token,
-//           });
-//         }
-//       });
-//     })
-//     .catch((err) => {
-//       res.status(500).json *
-//         {
-//           err: err,
-//         };
-//     });
-// });
 
 module.exports = router;
 
