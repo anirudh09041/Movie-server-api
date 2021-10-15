@@ -22,10 +22,10 @@ router.get("/all-movies", (req, res) => {
   MovieInfo.find()
     .then((result) => {
       // storing the result in a file "MoviesList.txt"
-      fs.appendFile("MoviesList.txt", result, function (err) {
-        if (err) throw err;
-        console.log(" File Saved!");
-      });
+      // fs.appendFile("MoviesList.txt", result, function (err) {
+      //   if (err) throw err;
+      //   console.log(" File Saved!");
+      // });
       res.send(result);
     })
     .catch((err) => console.log(err));
