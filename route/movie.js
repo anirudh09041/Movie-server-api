@@ -96,3 +96,5 @@ router.delete("/:name", checkAuth, (req, res) => {
 });
 
 module.exports = router;
+
+// ready to deploy on heroku
